@@ -1,10 +1,10 @@
 enum Frequency {
-    Minutely,
-    Hourly,
-    Daily,
-    Weekly,
-    Monthly,
-    Yearly
+    Minutely = "minutely",
+    Hourly = "hourly",
+    Daily = "daily",
+    Weekly = "weekly",
+    Monthly = "monthly",
+    Yearly = "yearly"
 }
 
 enum Month {
@@ -66,7 +66,7 @@ function parseRecurrenceRule(content: string): ICalRecurrenceRule {
         const [property, value] = curr.split("=")
         const propertyName = property.trim().toLowerCase()
         switch (propertyName) {
-            case "frequency":
+            case "freq":
                 prev["frequency"] = parseFrequency(value);
                 break;
             case "count":
@@ -93,22 +93,39 @@ function parseRecurrenceRule(content: string): ICalRecurrenceRule {
                         const weekDay = parseWeekAbbreviation(dayString.substring(2))
                         return [digit, weekDay]
                     }
-                    const weekDay = parseWeekAbbreviation(dayString.substring(1))
+                    const weekDay = parseWeekAbbreviation(dayString)
                     return [0, weekDay]
                 })
                 break;
-            case "byMinute":
-            case "byHour":
+            case "byminute":
+                const minutes = value.split(',').map(num => Number(num))
+                prev["byMinute"] = minutes
+                break;
+            case "byhour":
+                const hours = value.split(',').map(num => Number(num))
+                prev["byHour"] = hours
+                break;
             case "bymonthday":
-            case "byWeekNum":
-            case "byYearDay":
-                const nums = value.split(',').map(num => Number(num))
-                prev["byMonthDay"] = nums
+                const monthDays = value.split(',').map(num => Number(num))
+                prev["byMonthDay"] = monthDays
+                break;
+            case "byweekno":
+                const weekNums = value.split(',').map(num => Number(num))
+                prev["byWeekNum"] = weekNums
                 break;
             case "bymonth":
-                const months = value.split(',').map()
+                const months = value.split(',').map(num => Number(num))
+                prev["byMonth"] = months
+                break;
+            case "byyearday":
+                const yearDays = value.split(',').map(num => Number(num))
+                prev["byYearDay"] = yearDays
+                break;
             case "wkst":
                 prev["weekStart"] = parseWeekAbbreviation(value);
+                break;
+            case "bysetpos":
+                prev["bySetPos"] = Number(value)
                 break;
             default:
                 console.warn(`Property ${propertyName} not recognized or supported.`)
@@ -117,13 +134,16 @@ function parseRecurrenceRule(content: string): ICalRecurrenceRule {
     }, {})
 }
 
-function parseFrequency(freq: string) {
-    switch(freq.toLowerCase()) {
+function parseFrequency(frequency: string) {
+    const freq = frequency.toLowerCase()
+    switch(freq) {
         case "minutely":
             return Frequency.Minutely;
         case "hourly":
             return Frequency.Hourly;
         case "daily":
+            return Frequency.Daily;
+        case "weekly":
             return Frequency.Weekly;
         case "monthly":
             return Frequency.Monthly;
@@ -152,12 +172,6 @@ function parseWeekAbbreviation(abbreviation: string) {
             return Weekday.Sunday;
         default:
             throw new Error(`Weekday abbreviation ${abbreviation} not supported.`)
-    }
-}
-
-function parseMonthAbbreviation(abbreviation: string) {
-    switch(abbreviation) {
-        
     }
 }
 

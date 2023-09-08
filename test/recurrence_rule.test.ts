@@ -406,5 +406,5 @@ test.each([
     }
 ])('$msg', ({input, expected}: {input: string, expected: ICalRecurrenceRule}) => {
     const result = parseRecurrenceRule(input)
-    expect(result).toBe(expected)
+    expect(result).toStrictEqual(expected)
 })
