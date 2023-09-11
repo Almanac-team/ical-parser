@@ -3,7 +3,7 @@ const ATTRIBUTE_REGEX = ""
 
 function parse(content: string): Array<any> {
     let elements = content.split("\n")
-    let count =0
+    let count = 0
     const parsed = elements.reduce((prev, line) => {
         switch(line.trim()) {
             case "BEGIN:VEVENT":
