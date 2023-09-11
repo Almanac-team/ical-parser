@@ -1,3 +1,7 @@
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+dayjs.extend(customParseFormat)
+
 enum Frequency {
     Minutely = "minutely",
     Hourly = "hourly",
@@ -74,7 +78,7 @@ function parseRecurrenceRule(content: string): ICalRecurrenceRule {
                 prev[propertyName] = Number(value);
                 break;
             case "until":
-                prev["until"] = new Date(value);
+                prev["until"] = parseIcalDate(value)
                 break;
             case "byday":
                 const dayStrings = value.split(',')
@@ -173,6 +177,11 @@ function parseWeekAbbreviation(abbreviation: string) {
         default:
             throw new Error(`Weekday abbreviation ${abbreviation} not supported.`)
     }
+}
+
+function parseIcalDate(dateString: string) {
+    const dayjsDate = dayjs(dateString, "YYYYMMDD HHMMSSZ")
+    return dayjsDate.toDate()
 }
 
 export {parseRecurrenceRule, parseFrequency, Frequency, Month, Weekday, ICalEvent, ICalRecurrenceRule}

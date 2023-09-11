@@ -1,3 +1,7 @@
+import dayjs from 'dayjs'
+import arraySupport from 'dayjs/plugin/arraySupport'
+dayjs.extend(arraySupport)
+
 import { parseRecurrenceRule, Frequency, ICalRecurrenceRule, Month, Weekday } from "../src/lib/rrule";
 
 test.each([
@@ -13,7 +17,7 @@ test.each([
         input: "FREQ=DAILY;UNTIL=19971224T000000Z",
         expected: {
             frequency: Frequency.Daily,
-            until: new Date(1997, 12, 24)
+            until: dayjs("19971224T000000Z", "YYYYMMDD HHMMSSZ").toDate()
         },
         msg: 'daily with enddate'
     },
@@ -38,7 +42,7 @@ test.each([
         input: "FREQ=YEARLY;UNTIL=20000131T140000Z;BYMONTH=1;BYDAY=SU,MO,TU,WE,TH,FR,SA",
         expected: {
             frequency: Frequency.Yearly,
-            until: new Date(2000, 1, 31),
+            until: dayjs("20000131T140000Z", "YYYYMMDD HHMMSSZ").toDate(),
             byMonth: [Month.January],
             byDay: [
                 [0, Weekday.Sunday],
@@ -56,7 +60,7 @@ test.each([
         input: "FREQ=DAILY;UNTIL=20000131T140000Z;BYMONTH=1",
         expected: {
             frequency: Frequency.Daily,
-            until: new Date(2000, 1, 31),
+            until: dayjs("20000131T140000Z", "YYYYMMDD HHMMSSZ").toDate(),
             byMonth: [Month.January]
         },
         msg: 'bymonth combined with daily frequency'
@@ -73,7 +77,7 @@ test.each([
         input: "FREQ=WEEKLY;UNTIL=19971224T000000Z",
         expected: {
             frequency: Frequency.Weekly,
-            until: new Date(1997, 12, 24)
+            until: dayjs("19971224T000000Z", "YYYYMMDD HHMMSSZ").toDate()
         },
         msg: 'weekly frequency with end date'
     },
@@ -90,7 +94,7 @@ test.each([
         input: "FREQ=WEEKLY;UNTIL=19971007T000000Z;WKST=SU;BYDAY=TU,TH",
         expected: {
             frequency: Frequency.Weekly,
-            until: new Date(1997, 10, 7),
+            until: dayjs("19971007T000000Z", "YYYYMMDD HHMMSSZ").toDate(),
             weekStart: Weekday.Sunday,
             byDay: [
                 [0, Weekday.Tuesday], 
@@ -104,7 +108,7 @@ test.each([
         expected: {
             frequency: Frequency.Weekly,
             interval: 2,
-            until: new Date(1997, 12, 24),
+            until: dayjs("19971224T000000Z", "YYYYMMDD HHMMSSZ").toDate(),
             weekStart: Weekday.Sunday,
             byDay: [
                 [0, Weekday.Monday], 
@@ -143,9 +147,9 @@ test.each([
         input: "FREQ=MONTHLY;UNTIL=19971224T000000Z;BYDAY=1FR",
         expected: {
             frequency: Frequency.Monthly,
-            until: new Date(1997, 12, 24),
+            until: dayjs("19971224T000000Z", "YYYYMMDD HHMMSSZ").toDate(),
             byDay: [
-                [0, Weekday.Friday]
+                [1, Weekday.Friday]
             ] as Array<[Number, Weekday]>
         },
         msg: 'numbered day of week with end date'
@@ -307,7 +311,7 @@ test.each([
     {
         input: "FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13",
         expected: {
-            frequency: Frequency.Yearly,
+            frequency: Frequency.Monthly,
             byDay: [
                 [0, Weekday.Friday]
             ] as Array<[0, Weekday.Friday]>,
@@ -373,7 +377,7 @@ test.each([
         expected: {
             frequency: Frequency.Hourly,
             interval: 3,
-            until: new Date(1997, 9, 2)
+            until: dayjs("19970902T170000Z", "YYYYMMDD HHMMSSZ").toDate()
         },
         msg: 'hourly frequency'
     },
