@@ -81,16 +81,16 @@ function parseRecurrenceRule(content: string): ICalRecurrenceRule {
                 if (dayStrings.length === 0) {
                     break;
                 }
+
+                const digitStringMatch = new RegExp("^-?[0-9]+(.*)$");
                 prev["byDay"] = dayStrings.map(dayString => {
                     // day strings listed will have a preceding digit in some cases
-                    if (isDigit(dayString[0])) {
-                        const digit = Number(dayString[0])
-                        const weekDay = parseWeekAbbreviation(dayString.substring(1))
-                        return [digit, weekDay]
-                    } else if (isDigit(dayString[1])) {
-                        // account for negative daystring numbers
-                        const digit = -Number(dayString[1])
-                        const weekDay = parseWeekAbbreviation(dayString.substring(2))
+                    const numCheck = dayString.match(digitStringMatch)
+                    if (numCheck) {
+                        // match at 2nd capture group
+                        const weekDayAbbr = numCheck[1]
+                        const weekDay = parseWeekAbbreviation(weekDayAbbr)
+                        const digit = Number(dayString.substring(0, dayString.length - weekDayAbbr.length))
                         return [digit, weekDay]
                     }
                     const weekDay = parseWeekAbbreviation(dayString)
@@ -173,11 +173,6 @@ function parseWeekAbbreviation(abbreviation: string) {
         default:
             throw new Error(`Weekday abbreviation ${abbreviation} not supported.`)
     }
-}
-
-function isDigit(character: string) {
-    const digitSet = new Set(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
-    return digitSet.has(character);
 }
 
 export {parseRecurrenceRule, parseFrequency, Frequency, Month, Weekday, ICalEvent, ICalRecurrenceRule}
